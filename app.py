@@ -44,31 +44,37 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
 
-    'pool_size': 5,
+    'pool_size': 5,  # Lower maximum number of connections to reduce overhead
 
-    'pool_timeout': 10,
+    'pool_timeout': 10,  # Shorter timeout to fail faster
 
-    'pool_recycle': 60,
+    'pool_recycle': 60,  # Recycle connections more frequently (every minute)
 
-    'max_overflow': 10,
+    'max_overflow': 10,  # Max overflow (extra connections) when pool is full
 
-    'pool_pre_ping': True,
+    'pool_pre_ping': True,  # Check connection before using it
 
     'connect_args': {
 
-        'connect_timeout': 10,
+        'connect_timeout': 10,  # Connection timeout in seconds
 
-        'keepalives': 1,
+        'keepalives': 1,  # Enable TCP keepalives
 
-        'keepalives_idle': 30,
+        'keepalives_idle': 30,  # Idle time before sending keepalives (seconds)
 
-        'keepalives_interval': 10,
+        'keepalives_interval': 10,  # Interval between keepalives (seconds)
 
-        'keepalives_count': 5
+        'keepalives_count': 5  # Max number of keepalives before connection is considered dead
 
     }
 
 }
+
+# Initialize SQLAlchemy instance
+
+db = SQLAlchemy(app)
+
+migrate = Migrate(app, db)
 
 # Enable proxy support for proper IP handling
 
@@ -99,15 +105,11 @@ def after_request(response):
 
     return response
 
-# Initialize database
-
-db = SQLAlchemy(app)
-
-migrate = Migrate(app, db)
 
 # Import models
 
 from models import Admin, Guest, Quiz, Question, Option, Result, Improvement, CertificationType, QuizDifficulty
+
 
 # Admin authentication decorator
 
@@ -127,6 +129,7 @@ def admin_required(f):
 
     return decorated_function
 
+
 # Guest authentication decorator
 
 def guest_required(f):
@@ -145,6 +148,7 @@ def guest_required(f):
 
     return decorated_function
 
+
 # Import routes
 
 from routes import register_routes
@@ -152,6 +156,7 @@ from routes import register_routes
 # Initialize the app with routes
 
 register_routes(app)
+
 
 # Create an initial admin user if none exists
 
@@ -180,6 +185,7 @@ def create_initial_admin():
         db.session.commit()
 
         logging.info("Created initial admin and sample quizzes")
+
 
 def create_sample_quizzes():
 
@@ -371,8 +377,10 @@ def create_sample_quizzes():
 
         db.session.add(improvement)
 
+
 if __name__ == '__main__':
 
     port = int(os.environ.get('PORT', 5000))
 
     app.run(host='0.0.0.0', port=port, debug=True)
+ 
