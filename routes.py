@@ -6,7 +6,7 @@ import functools
 import time
 import logging
 from sqlalchemy.exc import OperationalError, SQLAlchemyError
-from . import db
+from models import db
 from models import (Admin, Guest, Quiz, Question, Option, Result, Answer, 
                    Improvement, SuggestedImprovement, QuizDifficulty, CertificationType)
 
