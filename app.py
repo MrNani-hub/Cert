@@ -34,7 +34,7 @@ def create_app():
 
     # Register function after app and db are fully initialized
 
-    @app.before_first_request
+    @app.before_request
 
     def create_initial_admin():
 
