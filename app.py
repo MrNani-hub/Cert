@@ -104,7 +104,7 @@ register_routes(app)
 
 
 # Create an initial admin user if none exists
-@app.before_first_request
+@app.before_request
 def create_initial_admin():
     admin_exists = Admin.query.filter_by(username='admin').first()
     if not admin_exists:
