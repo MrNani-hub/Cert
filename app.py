@@ -160,8 +160,6 @@ register_routes(app)
 
 # Create an initial admin user if none exists
 
-@app.before_request
-
 def create_initial_admin():
 
     admin_exists = Admin.query.filter_by(username='admin').first()
@@ -378,9 +376,27 @@ def create_sample_quizzes():
         db.session.add(improvement)
 
 
+def create_app():
+
+    with app.app_context():
+
+        # Initialize the database
+
+        db.create_all()
+
+        # Create initial admin if not exists
+
+        create_initial_admin()
+
+    return app
+
+
 if __name__ == '__main__':
+
+    # Create the app and run it
+
+    create_app()
 
     port = int(os.environ.get('PORT', 5000))
 
     app.run(host='0.0.0.0', port=port, debug=True)
- 
