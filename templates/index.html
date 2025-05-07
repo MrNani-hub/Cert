@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+
+{% block title %}Azure AI-900 Quiz Platform{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row align-items-center">
+        <div class="col-lg-6">
+            <h1 class="display-4 fw-bold text-primary mb-4">Azure Certification Quiz Platform</h1>
+            <p class="lead mb-4">
+                Test your knowledge of Microsoft Azure certifications with our comprehensive quiz platform. 
+                Prepare for Azure exams like AI-900, AZ-104, and AZ-400, and identify areas for improvement.
+            </p>
+            <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                <a href="{{ url_for('guest_login') }}" class="btn btn-primary btn-lg px-4 me-md-2">
+                    <i class="fas fa-user-check me-2"></i> Take a Quiz
+                </a>
+                <a href="{{ url_for('admin_login') }}" class="btn btn-outline-secondary btn-lg px-4">
+                    <i class="fas fa-lock me-2"></i> Admin Login
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="p-5 text-center">
+                <svg width="400" height="300" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Azure Logo Background -->
+                    <rect x="250" y="150" width="300" height="300" rx="20" fill="#0078d4" />
+                    
+                    <!-- Quiz Elements -->
+                    <rect x="290" y="190" width="220" height="40" rx="5" fill="#ffffff" />
+                    <rect x="290" y="250" width="220" height="40" rx="5" fill="#ffffff" />
+                    <rect x="290" y="310" width="220" height="40" rx="5" fill="#ffffff" />
+                    <rect x="290" y="370" width="220" height="40" rx="5" fill="#ffffff" />
+                    
+                    <!-- Checkmarks and Crosses -->
+                    <circle cx="270" y="210" r="15" fill="#00b294" />
+                    <path d="M263,210 L270,217 L278,203" stroke="#ffffff" stroke-width="3" fill="none" />
+                    
+                    <circle cx="270" y="270" r="15" fill="#d13438" />
+                    <path d="M263,263 L278,278 M263,278 L278,263" stroke="#ffffff" stroke-width="3" />
+                    
+                    <circle cx="270" y="330" r="15" fill="#00b294" />
+                    <path d="M263,330 L270,337 L278,323" stroke="#ffffff" stroke-width="3" fill="none" />
+                    
+                    <circle cx="270" y="390" r="15" fill="#00b294" />
+                    <path d="M263,390 L270,397 L278,383" stroke="#ffffff" stroke-width="3" fill="none" />
+                </svg>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-5 pt-5">
+        <div class="col-md-4 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-body text-center p-4">
+                    <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center mx-auto mb-4" style="width: 80px; height: 80px;">
+                        <i class="fas fa-graduation-cap text-white fa-3x"></i>
+                    </div>
+                    <h3 class="card-title">Learn</h3>
+                    <p class="card-text">Test your knowledge with realistic Azure certification exam questions covering all exam objectives and domains.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-body text-center p-4">
+                    <div class="rounded-circle bg-success d-flex align-items-center justify-content-center mx-auto mb-4" style="width: 80px; height: 80px;">
+                        <i class="fas fa-chart-line text-white fa-3x"></i>
+                    </div>
+                    <h3 class="card-title">Improve</h3>
+                    <p class="card-text">Get personalized feedback on your performance with detailed explanations and certification-specific improvement suggestions.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-body text-center p-4">
+                    <div class="rounded-circle bg-info d-flex align-items-center justify-content-center mx-auto mb-4" style="width: 80px; height: 80px;">
+                        <i class="fas fa-certificate text-white fa-3x"></i>
+                    </div>
+                    <h3 class="card-title">Certify</h3>
+                    <p class="card-text">Build confidence and readiness for your chosen Azure certification exam through focused practice and assessment.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-5">
+        <div class="col-12 text-center">
+            <h2 class="mb-4">Available Certification Paths</h2>
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="card border-primary h-100">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">AI-900: Azure AI Fundamentals</h5>
+                        </div>
+                        <div class="card-body">
+                            <p>Learn core AI concepts, Azure Cognitive Services, Machine Learning, computer vision, and responsible AI principles.</p>
+                            <a href="{{ url_for('guest_login') }}" class="btn btn-outline-primary mt-2">Start AI-900 Quiz</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card border-success h-100">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0">AZ-104: Azure Administrator</h5>
+                        </div>
+                        <div class="card-body">
+                            <p>Master Azure resource management, virtual networks, storage solutions, identity services, and governance tools.</p>
+                            <a href="{{ url_for('guest_login') }}" class="btn btn-outline-success mt-2">Start AZ-104 Quiz</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card border-info h-100">
+                        <div class="card-header bg-info text-white">
+                            <h5 class="mb-0">AZ-400: DevOps Engineer Expert</h5>
+                        </div>
+                        <div class="card-body">
+                            <p>Learn DevOps practices with Azure DevOps tools, CI/CD pipelines, Infrastructure as Code, and automated testing strategies.</p>
+                            <a href="{{ url_for('guest_login') }}" class="btn btn-outline-info mt-2">Start AZ-400 Quiz</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="alert alert-info text-center">
+                <i class="fas fa-info-circle me-2"></i>
+                <strong>More certification types are continually being added!</strong> 
+                Admins can add new certification types and quizzes for the latest Azure exams.
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

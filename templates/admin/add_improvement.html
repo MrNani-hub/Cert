@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Improvement Area - {{ quiz.title }} - Admin Dashboard - Azure Certification Quiz Platform{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-12">
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('admin_dashboard') }}">Admin Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('admin_quizzes') }}">Quizzes</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('admin_edit_quiz', quiz_id=quiz.id) }}">{{ quiz.title }}</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('admin_improvements', quiz_id=quiz.id) }}">Improvement Areas</a></li>
+                    <li class="breadcrumb-item active">Add Improvement Area</li>
+                </ol>
+            </nav>
+
+            <div class="card shadow mb-4">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">
+                        <i class="fas fa-plus-circle me-2"></i> Add Improvement Area to: {{ quiz.title }}
+                    </h4>
+                    <a href="{{ url_for('admin_improvements', quiz_id=quiz.id) }}" class="btn btn-light btn-sm">
+                        <i class="fas fa-list me-1"></i> Back to Improvement Areas
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info mb-4">
+                        <i class="fas fa-info-circle me-2"></i> Improvement areas are suggestions that will be shown to guests who fail the quiz, helping them understand what they need to work on.
+                    </div>
+                    
+                    <form method="POST" action="{{ url_for('admin_add_improvement', quiz_id=quiz.id) }}">
+                        <div class="mb-4">
+                            <label for="description" class="form-label">Improvement Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+                            <div class="form-text">Describe an area where guests might need to improve their knowledge to pass the certification exam.</div>
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{{ url_for('admin_improvements', quiz_id=quiz.id) }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-1"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i> Save Improvement Area
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="card shadow">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="fas fa-lightbulb me-2"></i> Examples of Good Improvement Areas</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card h-100 bg-light">
+                                <div class="card-body">
+                                    <h5 class="card-title">For Azure AI-900</h5>
+                                    <ul class="mb-0">
+                                        <li>Improve your understanding of Azure Cognitive Services and their use cases</li>
+                                        <li>Practice working with the Computer Vision API and image analysis concepts</li>
+                                        <li>Study the differences between supervised, unsupervised, and reinforcement learning</li>
+                                        <li>Review Azure Machine Learning workspace creation and configuration</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card h-100 bg-light">
+                                <div class="card-body">
+                                    <h5 class="card-title">For Azure AZ-104</h5>
+                                    <ul class="mb-0">
+                                        <li>Strengthen knowledge of virtual network peering and configurations</li>
+                                        <li>Practice managing Azure storage accounts, blobs, and access control</li>
+                                        <li>Review Azure resource management using ARM templates</li>
+                                        <li>Learn more about Azure Active Directory identity management</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

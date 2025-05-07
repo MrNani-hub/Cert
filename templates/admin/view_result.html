@@ -1,0 +1,245 @@
+{% extends 'base.html' %}
+
+{% block title %}View Result - Admin Dashboard - Azure Certification Quiz Platform{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-12">
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('admin_dashboard') }}">Admin Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('admin_results') }}">Results</a></li>
+                    <li class="breadcrumb-item active">View Result</li>
+                </ol>
+            </nav>
+
+            <div class="card shadow mb-4">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">
+                        <i class="fas fa-chart-pie me-2"></i> Quiz Result Details
+                    </h4>
+                    <a href="{{ url_for('admin_results') }}" class="btn btn-light btn-sm">
+                        <i class="fas fa-list me-1"></i> Back to Results
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5 class="border-bottom pb-2 mb-3">Guest Information</h5>
+                            <dl class="row">
+                                <dt class="col-sm-4">Name:</dt>
+                                <dd class="col-sm-8">{{ result.guest.name }}</dd>
+                                
+                                <dt class="col-sm-4">Mobile:</dt>
+                                <dd class="col-sm-8">{{ result.guest.mobile }}</dd>
+                                
+                                <dt class="col-sm-4">Email:</dt>
+                                <dd class="col-sm-8">
+                                    {% if result.guest.email %}
+                                        {{ result.guest.email }}
+                                    {% else %}
+                                        <span class="text-muted">Not provided</span>
+                                    {% endif %}
+                                </dd>
+                                
+                                <dt class="col-sm-4">Registered:</dt>
+                                <dd class="col-sm-8">{{ result.guest.created_at.strftime('%d %b %Y, %H:%M') }}</dd>
+                            </dl>
+                        </div>
+                        <div class="col-md-6">
+                            <h5 class="border-bottom pb-2 mb-3">Quiz Information</h5>
+                            <dl class="row">
+                                <dt class="col-sm-4">Quiz:</dt>
+                                <dd class="col-sm-8">{{ result.quiz.title }}</dd>
+                                
+                                <dt class="col-sm-4">Certification:</dt>
+                                <dd class="col-sm-8">
+                                    {% if result.quiz.certification %}
+                                        <span class="badge bg-info">{{ result.quiz.certification.code }}</span>
+                                        {{ result.quiz.certification.name }}
+                                    {% else %}
+                                        <span class="text-muted">None assigned</span>
+                                    {% endif %}
+                                </dd>
+                                
+                                <dt class="col-sm-4">Difficulty:</dt>
+                                <dd class="col-sm-8">
+                                    {% if result.quiz.difficulty.value == 'easy' %}
+                                        <span class="badge bg-success">Easy</span>
+                                    {% elif result.quiz.difficulty.value == 'medium' %}
+                                        <span class="badge bg-warning text-dark">Medium</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Hard</span>
+                                    {% endif %}
+                                </dd>
+                                
+                                <dt class="col-sm-4">Pass Requirement:</dt>
+                                <dd class="col-sm-8">{{ result.quiz.pass_percentage }}%</dd>
+                            </dl>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5 class="border-bottom pb-2 mb-3">Result Information</h5>
+                            <dl class="row">
+                                <dt class="col-sm-4">Score:</dt>
+                                <dd class="col-sm-8">{{ result.score }} out of {{ result.total_questions }} ({{ result.percentage|round|int }}%)</dd>
+                                
+                                <dt class="col-sm-4">Status:</dt>
+                                <dd class="col-sm-8">
+                                    {% if result.passed %}
+                                        <span class="badge bg-success">Passed</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Failed</span>
+                                    {% endif %}
+                                </dd>
+                                
+                                <dt class="col-sm-4">Started At:</dt>
+                                <dd class="col-sm-8">{{ result.started_at.strftime('%d %b %Y, %H:%M') }}</dd>
+                                
+                                <dt class="col-sm-4">Completed At:</dt>
+                                <dd class="col-sm-8">{{ result.completed_at.strftime('%d %b %Y, %H:%M') }}</dd>
+                            </dl>
+                        </div>
+                        <div class="col-md-6">
+                            <h5 class="border-bottom pb-2 mb-3">Time Information</h5>
+                            <dl class="row">
+                                <dt class="col-sm-4">Time Limit:</dt>
+                                <dd class="col-sm-8">{{ result.quiz.time_limit }} minutes</dd>
+                                
+                                <dt class="col-sm-4">Time Taken:</dt>
+                                <dd class="col-sm-8">
+                                    {% if result.time_taken %}
+                                        {% set minutes = (result.time_taken / 60)|int %}
+                                        {% set seconds = result.time_taken % 60 %}
+                                        {{ minutes }} minutes, {{ seconds }} seconds
+                                    {% else %}
+                                        <span class="text-muted">Not recorded</span>
+                                    {% endif %}
+                                </dd>
+                                
+                                <dt class="col-sm-4">Time Remaining:</dt>
+                                <dd class="col-sm-8">
+                                    {% if result.time_taken %}
+                                        {% set remaining = (result.quiz.time_limit * 60) - result.time_taken %}
+                                        {% if remaining > 0 %}
+                                            {% set rem_minutes = (remaining / 60)|int %}
+                                            {% set rem_seconds = remaining % 60 %}
+                                            {{ rem_minutes }} minutes, {{ rem_seconds }} seconds
+                                        {% else %}
+                                            <span class="text-danger">Time expired</span>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="text-muted">Not recorded</span>
+                                    {% endif %}
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                    
+                    <h5 class="border-bottom pb-2 mb-3">Answers</h5>
+                    <div class="accordion" id="answersAccordion">
+                        {% for answer in answers %}
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading{{ answer.id }}">
+                                <button class="accordion-button {{ 'collapsed' if not loop.first }}" type="button" data-bs-toggle="collapse"
+                                       data-bs-target="#collapse{{ answer.id }}" aria-expanded="{{ 'true' if loop.first else 'false' }}"
+                                       aria-controls="collapse{{ answer.id }}">
+                                    <div class="d-flex align-items-center w-100">
+                                        <span class="me-3">Question {{ loop.index }}</span>
+                                        {% if answer.is_correct %}
+                                            <span class="badge bg-success ms-auto me-2">Correct</span>
+                                        {% else %}
+                                            <span class="badge bg-danger ms-auto me-2">Incorrect</span>
+                                        {% endif %}
+                                    </div>
+                                </button>
+                            </h2>
+                            <div id="collapse{{ answer.id }}" class="accordion-collapse collapse {{ 'show' if loop.first }}"
+                                 aria-labelledby="heading{{ answer.id }}" data-bs-parent="#answersAccordion">
+                                <div class="accordion-body">
+                                    <div class="mb-3">
+                                        <strong>Question:</strong>
+                                        <p>{{ answer.question.text }}</p>
+                                    </div>
+                                    
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <strong>Guest Answer:</strong>
+                                            <div class="mt-2 ps-3 border-start border-2 {{ 'border-success' if answer.is_correct else 'border-danger' }}">
+                                                {{ answer.selected_option.text }}
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-md-6">
+                                            <strong>Correct Answer:</strong>
+                                            <div class="mt-2 ps-3 border-start border-2 border-success">
+                                                {% for option in answer.question.options %}
+                                                    {% if option.is_correct %}
+                                                        {{ option.text }}
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    {% if answer.question.explanation %}
+                                    <div class="alert alert-info">
+                                        <strong>Explanation:</strong>
+                                        <p class="mb-0 mt-1">{{ answer.question.explanation }}</p>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    <div class="mt-3">
+                                        <strong>All Options:</strong>
+                                        <ul class="mt-2">
+                                            {% for option in answer.question.options %}
+                                            <li class="{{ 'text-success fw-bold' if option.is_correct }}">
+                                                {{ option.text }}
+                                                {% if option.is_correct %}
+                                                    <i class="fas fa-check-circle text-success ms-1"></i>
+                                                {% endif %}
+                                                {% if option.id == answer.selected_option.id and not option.is_correct %}
+                                                    <i class="fas fa-times-circle text-danger ms-1"></i>
+                                                {% endif %}
+                                            </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+            {% if result.suggested_improvements %}
+            <div class="card shadow">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="fas fa-lightbulb me-2"></i> Suggested Improvement Areas</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for suggestion in result.suggested_improvements %}
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-arrow-circle-right text-warning"></i>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <p class="mb-0">{{ suggestion.improvement.description }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

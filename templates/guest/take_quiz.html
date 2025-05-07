@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+
+{% block title %}Taking Quiz - {{ quiz.title }} - Azure Certification Quiz Platform{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">
+                        <i class="fas fa-question-circle me-2"></i> {{ quiz.title }}
+                    </h4>
+                    <div>
+                        {% if quiz.certification %}
+                            <span class="badge bg-info me-2">{{ quiz.certification.code }}</span>
+                        {% endif %}
+                        <span class="badge bg-light text-dark" id="time-display">
+                            <i class="fas fa-clock me-1"></i> <span id="time-remaining">{{ time_remaining_formatted }}</span>
+                        </span>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <div class="progress mb-4" style="height: 6px;">
+                        <div class="progress-bar" role="progressbar" style="width: {{ progress }}%;" 
+                             aria-valuenow="{{ progress }}" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between mb-4">
+                        <span>Question {{ current_index }} of {{ total_questions }}</span>
+                        <span>{{ answered_count }} answered</span>
+                    </div>
+                    
+                    <div class="question-container">
+                        <h5 class="mb-4">{{ question.text }}</h5>
+                        
+                        <form method="POST" action="{{ url_for('guest_take_quiz', result_id=result.id) }}" id="questionForm">
+                            <input type="hidden" name="question_id" value="{{ question.id }}">
+                            <input type="hidden" name="current_index" value="{{ current_index }}">
+                            
+                            <div class="options-container mb-4">
+                                {% for option in question.options %}
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="radio" name="option_id" id="option{{ option.id }}" 
+                                           value="{{ option.id }}" {{ 'checked' if selected_option_id == option.id }}>
+                                    <label class="form-check-label" for="option{{ option.id }}">
+                                        {{ option.text }}
+                                    </label>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    {% if current_index > 1 %}
+                                    <button type="submit" name="action" value="previous" class="btn btn-outline-primary me-2">
+                                        <i class="fas fa-arrow-left me-1"></i> Previous
+                                    </button>
+                                    {% endif %}
+                                    
+                                    {% if current_index < total_questions %}
+                                    <button type="submit" name="action" value="next" class="btn btn-primary">
+                                        Next <i class="fas fa-arrow-right ms-1"></i>
+                                    </button>
+                                    {% endif %}
+                                </div>
+                                
+                                <a href="{{ url_for('guest_submit_quiz', result_id=result.id) }}" class="btn btn-success">
+                                    <i class="fas fa-check-circle me-1"></i> Submit Quiz
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="card-footer bg-light">
+                    <div class="d-flex flex-wrap gap-2" id="question-navigator">
+                        {% for i in range(1, total_questions + 1) %}
+                            <button class="btn btn-sm {{ 'btn-success' if i in answered_questions else 'btn-outline-secondary' }} 
+                                           {{ 'border-primary' if i == current_index }}"
+                                    onclick="navigateToQuestion({{ i }})">
+                                {{ i }}
+                            </button>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form id="navigationForm" method="POST" action="{{ url_for('guest_take_quiz', result_id=result.id) }}">
+    <input type="hidden" name="question_id" value="{{ question.id }}">
+    <input type="hidden" name="current_index" value="{{ current_index }}">
+    <input type="hidden" name="target_index" id="target_index" value="">
+    <input type="hidden" name="action" value="navigate">
+    {% if selected_option_id %}
+    <input type="hidden" name="option_id" value="{{ selected_option_id }}">
+    {% endif %}
+</form>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Set up timer countdown
+    let timeRemaining = {{ time_remaining }};
+    const timeRemainingElement = document.getElementById('time-remaining');
+    const timeDisplayElement = document.getElementById('time-display');
+    
+    // Auto-save the form when an option is selected
+    const optionInputs = document.querySelectorAll('input[name="option_id"]');
+    optionInputs.forEach(input => {
+        input.addEventListener('change', function() {
+            document.getElementById('questionForm').submit();
+        });
+    });
+    
+    // Timer countdown
+    if (timeRemaining > 0) {
+        const interval = setInterval(function() {
+            timeRemaining--;
+            
+            if (timeRemaining <= 0) {
+                clearInterval(interval);
+                window.location.href = "{{ url_for('guest_submit_quiz', result_id=result.id) }}";
+            } else {
+                const minutes = Math.floor(timeRemaining / 60);
+                const seconds = timeRemaining % 60;
+                timeRemainingElement.textContent = `${minutes}m ${seconds.toString().padStart(2, '0')}s`;
+                
+                // Add warning when less than 5 minutes remain
+                if (timeRemaining < 300 && timeRemaining >= 60) {
+                    timeDisplayElement.classList.remove('bg-light', 'text-dark');
+                    timeDisplayElement.classList.add('bg-warning', 'text-dark');
+                }
+                // Add urgent warning when less than 1 minute remains
+                else if (timeRemaining < 60) {
+                    timeDisplayElement.classList.remove('bg-light', 'text-dark', 'bg-warning');
+                    timeDisplayElement.classList.add('bg-danger', 'text-white');
+                }
+            }
+        }, 1000);
+    }
+});
+
+// Function to navigate to a specific question
+function navigateToQuestion(index) {
+    document.getElementById('target_index').value = index;
+    document.getElementById('navigationForm').submit();
+}
+</script>
+{% endblock %}

@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}Add New Certification Type - Admin Dashboard - Azure Certification Quiz Platform{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('admin_dashboard') }}">Admin Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('admin_certifications') }}">Certification Types</a></li>
+                    <li class="breadcrumb-item active">Add New</li>
+                </ol>
+            </nav>
+            
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-certificate me-2"></i> Add New Certification Type
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('admin_add_certification') }}">
+                        <div class="mb-3">
+                            <label for="code" class="form-label fw-bold">Certification Code</label>
+                            <input type="text" class="form-control" id="code" name="code" required placeholder="e.g., AI-900, AZ-104">
+                            <div class="form-text">A unique code for this certification (e.g., AI-900, AZ-104, MS-900).</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="name" class="form-label fw-bold">Certification Name</label>
+                            <input type="text" class="form-control" id="name" name="name" required placeholder="e.g., Azure AI Fundamentals">
+                            <div class="form-text">The full name of the certification.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="description" class="form-label fw-bold">Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="3" placeholder="Describe what this certification covers..."></textarea>
+                            <div class="form-text">A brief description of what knowledge and skills this certification represents.</div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('admin_certifications') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-1"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i> Save Certification
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}Page Not Found - Azure AI-900 Quiz Platform{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <div class="mb-4">
+                <svg width="200" height="200" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="300" cy="300" r="250" fill="#f0f0f0" />
+                    <text x="300" y="340" font-family="Arial" font-size="180" font-weight="bold" fill="#0078d4" text-anchor="middle">404</text>
+                    <path d="M180,400 C180,280 420,280 420,400" stroke="#0078d4" stroke-width="8" fill="none" />
+                    <circle cx="200" cy="250" r="30" fill="#0078d4" />
+                    <circle cx="400" cy="250" r="30" fill="#0078d4" />
+                </svg>
+            </div>
+            
+            <h1 class="display-4 mb-4">Page Not Found</h1>
+            <p class="lead mb-4">
+                The page you are looking for doesn't exist or has been moved.
+            </p>
+            
+            <div class="mb-5">
+                <a href="{{ url_for('index') }}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-home me-2"></i> Return to Home
+                </a>
+            </div>
+            
+            <div class="card">
+                <div class="card-body">
+                    <h5>Looking for something?</h5>
+                    <p>Here are some helpful links:</p>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <ul class="list-unstyled text-start">
+                                <li><a href="{{ url_for('index') }}"><i class="fas fa-home me-2"></i> Home</a></li>
+                                <li><a href="{{ url_for('guest_login') }}"><i class="fas fa-user me-2"></i> Take a Quiz</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul class="list-unstyled text-start">
+                                <li><a href="{{ url_for('admin_login') }}"><i class="fas fa-lock me-2"></i> Admin Login</a></li>
+                                <li><a href="{{ url_for('guest_results') }}"><i class="fas fa-history me-2"></i> My Results</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+
+{% block title %}Available Quizzes - Azure AI-900 Quiz Platform{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h2"><i class="fas fa-clipboard-list me-2"></i> Available Quizzes</h1>
+        <div>
+            <a href="{{ url_for('guest_results') }}" class="btn btn-outline-primary">
+                <i class="fas fa-history me-1"></i> My Results
+            </a>
+        </div>
+    </div>
+    
+    <div class="alert alert-info mb-4">
+        <div class="d-flex">
+            <div class="me-3">
+                <i class="fas fa-info-circle fa-2x"></i>
+            </div>
+            <div>
+                <h5>Welcome, {{ guest.name }}!</h5>
+                <p class="mb-0">
+                    Select a quiz below to test your knowledge of Azure AI-900 concepts. 
+                    Your results will be saved for later review.
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        {% for quiz in quizzes %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100 quiz-card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ quiz.title }}</h5>
+                    <p class="card-text">{{ quiz.description }}</p>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="badge bg-primary">
+                            <i class="fas fa-clock me-1"></i> {{ quiz.time_limit }} min
+                        </span>
+                        <span class="badge bg-info text-dark">
+                            <i class="fas fa-question-circle me-1"></i> {{ quiz.question_count }} Questions
+                        </span>
+                        <span class="badge bg-secondary">
+                            <i class="fas fa-chart-line me-1"></i> Pass: {{ quiz.pass_percentage }}%
+                        </span>
+                    </div>
+                    
+                    <div class="d-grid">
+                        {% if quiz.id in completed_quiz_ids %}
+                        <div class="btn-group" role="group">
+                            <a href="{{ url_for('guest_start_quiz', quiz_id=quiz.id) }}" class="btn btn-outline-primary">
+                                <i class="fas fa-redo me-1"></i> Retry Quiz
+                            </a>
+                            <a href="{{ url_for('guest_results') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-eye me-1"></i> View Past Results
+                            </a>
+                        </div>
+                        {% else %}
+                        <a href="{{ url_for('guest_start_quiz', quiz_id=quiz.id) }}" class="btn btn-primary">
+                            <i class="fas fa-play-circle me-1"></i> Start Quiz
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <small class="text-muted">
+                        {% if quiz.id in completed_quiz_ids %}
+                        <i class="fas fa-check-circle text-success me-1"></i> You've completed this quiz
+                        {% else %}
+                        <i class="fas fa-info-circle me-1"></i> You haven't taken this quiz yet
+                        {% endif %}
+                    </small>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-clipboard-check fa-3x text-muted mb-3"></i>
+                    <h5>No Quizzes Available</h5>
+                    <p class="mb-0">There are currently no active quizzes available. Please check back later.</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5 class="mb-0">About Azure AI-900 Certification</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-8">
+                    <p>
+                        The Azure AI Fundamentals certification validates your knowledge of common AI and machine learning workloads and how to implement them on Azure.
+                    </p>
+                    <p>
+                        Key exam areas include:
+                    </p>
+                    <ul>
+                        <li>Describing AI workloads and considerations</li>
+                        <li>Understanding fundamental principles of machine learning</li>
+                        <li>Exploring computer vision workloads</li>
+                        <li>Understanding Natural Language Processing</li>
+                        <li>Exploring conversational AI workloads</li>
+                    </ul>
+                    <p class="mb-0">
+                        <a href="https://learn.microsoft.com/en-us/certifications/azure-ai-fundamentals/" target="_blank" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-external-link-alt me-1"></i> Official Exam Page
+                        </a>
+                    </p>
+                </div>
+                <div class="col-md-4 text-center">
+                    <img src="https://learn.microsoft.com/en-us/media/learn/certification/badges/microsoft-certified-fundamentals-badge.svg" 
+                         alt="Microsoft Azure AI Fundamentals Badge" class="img-fluid" style="max-height: 200px;">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

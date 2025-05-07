@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Certification Types - Admin Dashboard - Azure Certification Quiz Platform{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-12">
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('admin_dashboard') }}">Admin Dashboard</a></li>
+                    <li class="breadcrumb-item active">Certification Types</li>
+                </ol>
+            </nav>
+            
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">
+                        <i class="fas fa-certificate me-2"></i> Certification Types
+                    </h4>
+                    <a href="{{ url_for('admin_add_certification') }}" class="btn btn-light">
+                        <i class="fas fa-plus-circle me-1"></i> Add New Certification
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if certifications %}
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Code</th>
+                                    <th>Name</th>
+                                    <th>Description</th>
+                                    <th>Quizzes</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for certification in certifications %}
+                                <tr>
+                                    <td>
+                                        <span class="badge bg-info">{{ certification.code }}</span>
+                                    </td>
+                                    <td>{{ certification.name }}</td>
+                                    <td>
+                                        {% if certification.description %}
+                                            {{ certification.description | truncate(100) }}
+                                        {% else %}
+                                            <span class="text-muted">No description</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% set quiz_count = certification.quizzes|length %}
+                                        {% if quiz_count > 0 %}
+                                            <span class="badge bg-success">{{ quiz_count }} quiz{{ 'zes' if quiz_count != 1 else '' }}</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">No quizzes</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <a href="{{ url_for('admin_edit_certification', certification_id=certification.id) }}" class="btn btn-sm btn-outline-primary" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <button type="button" class="btn btn-sm btn-outline-danger" title="Delete"
+                                                   data-bs-toggle="modal" data-bs-target="#deleteCertModal{{ certification.id }}">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </div>
+                                        
+                                        <!-- Delete Certification Modal -->
+                                        <div class="modal fade" id="deleteCertModal{{ certification.id }}" tabindex="-1" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header bg-danger text-white">
+                                                        <h5 class="modal-title">
+                                                            <i class="fas fa-exclamation-triangle me-2"></i> Delete Certification
+                                                        </h5>
+                                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <p>Are you sure you want to delete the certification type <strong>{{ certification.name }} ({{ certification.code }})</strong>?</p>
+                                                        
+                                                        {% if certification.quizzes|length > 0 %}
+                                                            <div class="alert alert-warning">
+                                                                <i class="fas fa-exclamation-circle me-2"></i> This certification has {{ certification.quizzes|length }} associated quiz(zes). Deleting it will affect these quizzes.
+                                                            </div>
+                                                        {% endif %}
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                        <form action="{{ url_for('admin_delete_certification', certification_id=certification.id) }}" method="POST">
+                                                            <button type="submit" class="btn btn-danger">Delete</button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i> No certification types have been created yet.
+                        <a href="{{ url_for('admin_add_certification') }}" class="alert-link">Create your first certification type</a>.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

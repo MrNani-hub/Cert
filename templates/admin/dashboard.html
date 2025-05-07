@@ -1,0 +1,223 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard - Azure Certification Quiz Platform{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h1 class="mb-4">
+        <i class="fas fa-tachometer-alt me-2"></i> Admin Dashboard
+    </h1>
+    
+    <div class="row mb-4">
+        <div class="col-md-4 mb-3 mb-md-0">
+            <div class="card stats-card bg-primary text-white h-100">
+                <div class="card-body text-center">
+                    <div class="stats-icon">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <div class="stats-number">{{ quizzes|length }}</div>
+                    <div class="stats-label">Total Quizzes</div>
+                </div>
+                <div class="card-footer bg-primary-dark">
+                    <a href="{{ url_for('admin_quizzes') }}" class="text-white stretched-link text-decoration-none">
+                        <i class="fas fa-arrow-right me-1"></i> Manage Quizzes
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-3 mb-md-0">
+            <div class="card stats-card bg-success text-white h-100">
+                <div class="card-body text-center">
+                    <div class="stats-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stats-number">{{ total_guests }}</div>
+                    <div class="stats-label">Registered Guests</div>
+                </div>
+                <div class="card-footer bg-success-dark">
+                    <span class="text-white">
+                        <i class="fas fa-info-circle me-1"></i> All-time total
+                    </span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card stats-card bg-info text-white h-100">
+                <div class="card-body text-center">
+                    <div class="stats-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <div class="stats-number">{{ total_results }}</div>
+                    <div class="stats-label">Quiz Attempts</div>
+                </div>
+                <div class="card-footer bg-info-dark">
+                    <a href="{{ url_for('admin_results') }}" class="text-white stretched-link text-decoration-none">
+                        <i class="fas fa-arrow-right me-1"></i> View Results
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i class="fas fa-book me-2"></i> Quizzes Overview
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if quizzes %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Questions</th>
+                                        <th>Pass %</th>
+                                        <th>Difficulty</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for quiz in quizzes %}
+                                        <tr>
+                                            <td>{{ quiz.title }}</td>
+                                            <td>{{ quiz.question_count }}</td>
+                                            <td>{{ quiz.pass_percentage }}%</td>
+                                            <td>
+                                                <span class="badge text-bg-{{ 
+                                                    'success' if quiz.difficulty.value == 'easy' else
+                                                    'warning' if quiz.difficulty.value == 'medium' else
+                                                    'danger' }}">
+                                                    {{ quiz.difficulty.value|capitalize }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="badge text-bg-{{ 'success' if quiz.is_active else 'secondary' }}">
+                                                    {{ 'Active' if quiz.is_active else 'Inactive' }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group btn-group-sm" role="group">
+                                                    <a href="{{ url_for('admin_questions', quiz_id=quiz.id) }}" class="btn btn-outline-primary">
+                                                        <i class="fas fa-list-ul"></i>
+                                                    </a>
+                                                    <a href="{{ url_for('admin_edit_quiz', quiz_id=quiz.id) }}" class="btn btn-outline-secondary">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info mb-0">
+                            <i class="fas fa-info-circle me-2"></i> No quizzes have been created yet.
+                            <a href="{{ url_for('admin_add_quiz') }}" class="alert-link">Create your first quiz</a>.
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="card-footer bg-light">
+                    <a href="{{ url_for('admin_quizzes') }}" class="btn btn-primary">
+                        <i class="fas fa-cogs me-2"></i> Manage All Quizzes
+                    </a>
+                    <a href="{{ url_for('admin_add_quiz') }}" class="btn btn-success ms-2">
+                        <i class="fas fa-plus me-2"></i> Add New Quiz
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i class="fas fa-tasks me-2"></i> Quick Actions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        <a href="{{ url_for('admin_certifications') }}" class="list-group-item list-group-item-action bg-light">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1"><i class="fas fa-certificate me-2"></i> Manage Certification Types</h6>
+                                <i class="fas fa-arrow-right"></i>
+                            </div>
+                            <p class="mb-1 small text-muted">Add or edit certification types available to guests.</p>
+                        </a>
+                        <a href="{{ url_for('admin_add_quiz') }}" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1"><i class="fas fa-plus me-2"></i> Create New Quiz</h6>
+                                <i class="fas fa-arrow-right"></i>
+                            </div>
+                            <p class="mb-1 small text-muted">Add a new quiz with questions and options.</p>
+                        </a>
+                        <a href="{{ url_for('admin_results') }}" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1"><i class="fas fa-chart-pie me-2"></i> View Quiz Results</h6>
+                                <i class="fas fa-arrow-right"></i>
+                            </div>
+                            <p class="mb-1 small text-muted">See performance data from all guests.</p>
+                        </a>
+                        <a href="{{ url_for('admin_quizzes') }}" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1"><i class="fas fa-edit me-2"></i> Edit Existing Quizzes</h6>
+                                <i class="fas fa-arrow-right"></i>
+                            </div>
+                            <p class="mb-1 small text-muted">Modify quizzes, questions, and answer options.</p>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i> Admin Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-3">
+                        <strong>Welcome to the Azure Certification Quiz Platform admin panel.</strong> Here you can manage all aspects of the certification quiz system.
+                    </p>
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Remember that any changes you make will be immediately visible to guests taking quizzes.
+                    </div>
+                    <p class="mb-0 small text-muted">
+                        <i class="fas fa-clock me-1"></i> Current server time: {{ now.strftime('%Y-%m-%d %H:%M:%S') }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .bg-primary-dark {
+        background-color: #0064bd;
+    }
+    .bg-success-dark {
+        background-color: #066706;
+    }
+    .bg-info-dark {
+        background-color: #00928f;
+    }
+    .stats-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+    }
+    .stats-icon {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+</style>
+{% endblock %}

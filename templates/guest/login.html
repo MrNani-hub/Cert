@@ -1,0 +1,175 @@
+{% extends 'base.html' %}
+
+{% block title %}Guest Login - Azure Certification Quiz Platform{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white text-center">
+                    <h4 class="mb-0">
+                        <i class="fas fa-user-check me-2"></i> Take a Quiz
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    <p class="text-center mb-4">
+                        Enter your details below to start taking quizzes. Your results will be saved for future reference.
+                    </p>
+                    
+                    <form method="POST" action="{{ url_for('guest_login') }}">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Full Name</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                <input type="text" class="form-control" id="name" name="name" required autofocus>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="mobile" class="form-label">Mobile Number</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                <input type="text" class="form-control" id="mobile" name="mobile" required 
+                                       placeholder="For identification purposes">
+                            </div>
+                            <div class="form-text">
+                                We'll use this to identify you when you return to check your results.
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email (Optional)</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                <input type="email" class="form-control" id="email" name="email" 
+                                       placeholder="Optional">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="certification" class="form-label fw-bold">Choose a Certification Path</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-certificate"></i></span>
+                                <select class="form-select" id="certification" name="certification" required>
+                                    <option value="" disabled selected>Select a certification</option>
+                                    {% for cert in certifications %}
+                                        <option value="{{ cert.id }}">{{ cert.code }}: {{ cert.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-text">
+                                Select which Microsoft Azure certification you're preparing for.
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4" id="certificationInfo" style="display: none;">
+                            <div class="alert alert-info">
+                                <div class="d-flex">
+                                    <div class="me-3">
+                                        <i class="fas fa-info-circle fa-2x"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="certification-name mb-1"></h5>
+                                        <p class="certification-description mb-0 small"></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-sign-in-alt me-2"></i> Start Taking Quizzes
+                            </button>
+                            <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-home me-2"></i> Back to Home
+                            </a>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer bg-light text-center">
+                    <small class="text-muted">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Are you an administrator? <a href="{{ url_for('admin_login') }}">Admin Login</a>
+                    </small>
+                </div>
+            </div>
+            
+            <div class="card mt-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Why Register?</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 text-center mb-3 mb-md-0">
+                            <i class="fas fa-history fa-3x text-primary mb-3"></i>
+                            <h5>Track Your Progress</h5>
+                            <p class="mb-0 small">See your previous quiz attempts and monitor your improvement over time.</p>
+                        </div>
+                        <div class="col-md-4 text-center mb-3 mb-md-0">
+                            <i class="fas fa-chart-line fa-3x text-success mb-3"></i>
+                            <h5>Personalized Insights</h5>
+                            <p class="mb-0 small">Get tailored suggestions to improve your knowledge in specific areas.</p>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <i class="fas fa-certificate fa-3x text-warning mb-3"></i>
+                            <h5>Exam Readiness</h5>
+                            <p class="mb-0 small">Prepare effectively for your selected Azure certification exam.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get references to elements
+        const certSelect = document.getElementById('certification');
+        const certInfoDiv = document.getElementById('certificationInfo');
+        const certNameElement = document.querySelector('.certification-name');
+        const certDescElement = document.querySelector('.certification-description');
+        
+        // Certification data from backend
+        const certifications = [
+            {% for cert in certifications %}
+            {
+                id: {{ cert.id }},
+                code: "{{ cert.code }}",
+                name: "{{ cert.name }}",
+                description: "{{ cert.description|default('') }}"
+            }{% if not loop.last %},{% endif %}
+            {% endfor %}
+        ];
+        
+        // Add event listener to select element
+        certSelect.addEventListener('change', function() {
+            const selectedId = parseInt(this.value);
+            
+            // Find the selected certification
+            const selectedCert = certifications.find(cert => cert.id === selectedId);
+            
+            if (selectedCert) {
+                // Update certification info elements
+                certNameElement.textContent = selectedCert.code + ': ' + selectedCert.name;
+                
+                if (selectedCert.description) {
+                    certDescElement.textContent = selectedCert.description;
+                    certDescElement.style.display = 'block';
+                } else {
+                    certDescElement.style.display = 'none';
+                }
+                
+                // Show the info div
+                certInfoDiv.style.display = 'block';
+            } else {
+                // Hide the info div if no certification is selected
+                certInfoDiv.style.display = 'none';
+            }
+        });
+    });
+</script>
+{% endblock %}
