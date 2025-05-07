@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, request, session, flash
+from flask import Flask, render_template, redirect, url_for, request, flash
 
 from flask_sqlalchemy import SQLAlchemy
 
@@ -6,9 +6,27 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 import os
 
-db = SQLAlchemy()
+# Initialize Flask app
 
-# Define models globally (SQLAlchemy requires this before initializing db with app)
+app = Flask(__name__)
+
+app.secret_key = os.environ.get("SECRET_KEY", "dev_secret_key")
+
+# Render-compatible PostgreSQL URL (environment variable recommended)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
+
+    "DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/mydb"
+
+)
+
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# Initialize SQLAlchemy
+
+db = SQLAlchemy(app)
+
+# Define Admin model
 
 class Admin(db.Model):
 
@@ -18,51 +36,59 @@ class Admin(db.Model):
 
     password = db.Column(db.String(200), nullable=False)
 
-def create_app():
+# Create tables before the first request
 
-    app = Flask(__name__)
+@app.before_first_request
 
-    app.secret_key = os.environ.get("SECRET_KEY", "mysecretkey")
+def create_tables_and_admin():
 
-    # Configure PostgreSQL or fallback to SQLite
+    db.create_all()
 
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL", "sqlite:///site.db")
+    if not Admin.query.filter_by(username='admin').first():
 
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+        hashed_pw = generate_password_hash('admin123', method='pbkdf2:sha256')
 
-    db.init_app(app)
+        admin = Admin(username='admin', password=hashed_pw)
 
-    # Register function after app and db are fully initialized
+        db.session.add(admin)
 
-    @app.before_request
+        db.session.commit()
 
-    def create_initial_admin():
+        print("Default admin user created")
 
-        with app.app_context():
+# Example route
 
-            db.create_all()
+@app.route('/')
 
-            if not Admin.query.filter_by(username='admin').first():
+def index():
 
-                hashed_password = generate_password_hash('admin123', method='sha256')
+    return "Welcome to the Flask App!"
 
-                admin = Admin(username='admin', password=hashed_password)
+# Example admin login route
 
-                db.session.add(admin)
+@app.route('/login', methods=['GET', 'POST'])
 
-                db.session.commit()
+def login():
 
-    @app.route('/')
+    if request.method == 'POST':
 
-    def home():
+        username = request.form['username']
 
-        return "Flask app running on Render successfully!"
+        password = request.form['password']
 
-    return app
+        admin = Admin.query.filter_by(username=username).first()
 
-# Expose app for Gunicorn
+        if admin and check_password_hash(admin.password, password):
 
-app = create_app()
+            return f"Welcome, {admin.username}!"
+
+        else:
+
+            flash("Invalid credentials")
+
+    return render_template('login.html')  # Ensure you have login.html in /templates
+
+# Run the app locally (use gunicorn in production)
 
 if __name__ == '__main__':
 
