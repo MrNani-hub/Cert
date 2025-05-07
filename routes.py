@@ -7,7 +7,7 @@ import time
 import logging
 from sqlalchemy.exc import OperationalError, SQLAlchemyError
 from . import db
-from .models import (Admin, Guest, Quiz, Question, Option, Result, Answer, 
+from models import (Admin, Guest, Quiz, Question, Option, Result, Answer, 
                    Improvement, SuggestedImprovement, QuizDifficulty, CertificationType)
 
 # Configure route logging
