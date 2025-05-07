@@ -155,7 +155,7 @@ register_routes(app)
 
 # Create an initial admin user if none exists
 
-@app.before_first_request
+@app.before_request
 
 def create_initial_admin():
 
