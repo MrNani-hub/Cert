@@ -1,6 +1,6 @@
 from datetime import datetime
 from enum import Enum
-from . import db
+from app import db
 
 # Enums
 class QuizDifficulty(Enum):
